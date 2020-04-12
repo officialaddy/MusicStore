@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -26,35 +27,15 @@ namespace MusicStore.Controllers
             return View(await applicationDbContext.ToListAsync());
         }
 
-        // GET: Songs/Details/5
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
 
-            var song = await _context.Song
-                .Include(s => s.Album)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (song == null)
-            {
-                return NotFound();
-            }
-
-            return View(song);
-        }
-
-        // GET: Songs/Create
+        [Authorize]
         public IActionResult Create()
         {
             ViewData["AlbumId"] = new SelectList(_context.Album, "Id", "Title");
             return View();
         }
 
-        // POST: Songs/Create
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Title,Type,AlbumId")] Song song)
@@ -69,7 +50,7 @@ namespace MusicStore.Controllers
             return View(song);
         }
 
-        // GET: Songs/Edit/5
+        [Authorize]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -86,9 +67,7 @@ namespace MusicStore.Controllers
             return View(song);
         }
 
-        // POST: Songs/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Title,Type,AlbumId")] Song song)
@@ -118,11 +97,11 @@ namespace MusicStore.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["AlbumId"] = new SelectList(_context.Album, "Id", "Title", song.AlbumId);
+            ViewData["AlbumId"] = new SelectList(_context.Album, "Id", "Title ", song.AlbumId);
             return View(song);
         }
 
-        // GET: Songs/Delete/5
+        [Authorize]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -141,7 +120,7 @@ namespace MusicStore.Controllers
             return View(song);
         }
 
-        // POST: Songs/Delete/5
+        [Authorize]
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)

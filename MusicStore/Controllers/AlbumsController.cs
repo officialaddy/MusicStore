@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -10,13 +13,15 @@ using MusicStore.Models;
 
 namespace MusicStore.Controllers
 {
+
     public class AlbumsController : Controller
     {
         private readonly ApplicationDbContext _context;
-
-        public AlbumsController(ApplicationDbContext context)
+        private readonly IWebHostEnvironment _host;
+        public AlbumsController(ApplicationDbContext context, IWebHostEnvironment host)
         {
             _context = context;
+            _host = host;
         }
 
         // GET: Albums
@@ -26,25 +31,7 @@ namespace MusicStore.Controllers
             return View(await applicationDbContext.ToListAsync());
         }
 
-        // GET: Albums/Details/5
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var album = await _context.Album
-                .Include(a => a.Author)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (album == null)
-            {
-                return NotFound();
-            }
-
-            return View(album);
-        }
-
+        [Authorize]
         // GET: Albums/Create
         public IActionResult Create()
         {
@@ -52,15 +39,20 @@ namespace MusicStore.Controllers
             return View();
         }
 
-        // POST: Albums/Create
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Title,ReleaseYear,AuthorId,Image")] Album album)
+        public async Task<IActionResult> Create([Bind("Id,Title,ReleaseYear,AuthorId,Image,ImageFile")] Album album)
         {
             if (ModelState.IsValid)
             {
+                if(album.ImageFile != null)
+                {
+                    var filename = DateTime.Now.ToString("hhmmss") + album.ImageFile.FileName;
+                    var filePath = Path.Combine(_host.WebRootPath, "images", filename);
+                    album.ImageFile.CopyTo(new FileStream(filePath, FileMode.Create));
+                    album.Image = $"/images/{filename}";
+                }
                 _context.Add(album);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
@@ -69,7 +61,7 @@ namespace MusicStore.Controllers
             return View(album);
         }
 
-        // GET: Albums/Edit/5
+        [Authorize]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -86,12 +78,10 @@ namespace MusicStore.Controllers
             return View(album);
         }
 
-        // POST: Albums/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Title,ReleaseYear,AuthorId,Image")] Album album)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Title,ReleaseYear,AuthorId,ImageFile")] Album album)
         {
             if (id != album.Id)
             {
@@ -102,6 +92,13 @@ namespace MusicStore.Controllers
             {
                 try
                 {
+                    if (album.ImageFile != null)
+                    {
+                        var filename = DateTime.Now.ToString("hhmmss") + album.ImageFile.FileName;
+                        var filePath = Path.Combine(_host.WebRootPath, "images",filename );
+                        album.ImageFile.CopyTo(new FileStream(filePath, FileMode.Create));
+                        album.Image = $"/images/{filename}";
+                    }
                     _context.Update(album);
                     await _context.SaveChangesAsync();
                 }
@@ -122,7 +119,7 @@ namespace MusicStore.Controllers
             return View(album);
         }
 
-        // GET: Albums/Delete/5
+        [Authorize]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -141,7 +138,7 @@ namespace MusicStore.Controllers
             return View(album);
         }
 
-        // POST: Albums/Delete/5
+        [Authorize]
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)

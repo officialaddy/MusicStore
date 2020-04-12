@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 
 namespace MusicStore.Models
@@ -14,5 +15,9 @@ namespace MusicStore.Models
         public string Lastname { get; set; }
         public int BirthYear { get; set; }
         public virtual ICollection<Album> Albums { get; set; }
+        public virtual string Fullname
+        {
+            get { return Firstname + " " + Lastname; }
+        }
     }
 }
