@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 
 namespace MusicStore.Models
 {
@@ -24,5 +26,8 @@ namespace MusicStore.Models
         public SongType Type { get; set; }
         public int AlbumId { get; set; }
         public virtual Album Album { get; set; }
+        public string Link { get; set; }
+        [NotMapped]
+        public IFormFile File { get; set; }
     }
 }
