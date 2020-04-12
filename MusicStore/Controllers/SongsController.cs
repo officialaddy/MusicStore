@@ -27,6 +27,24 @@ namespace MusicStore.Controllers
             return View(await applicationDbContext.ToListAsync());
         }
 
+        public async Task<IActionResult> Details(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var song = await _context.Song
+                .Include(s => s.Album)
+                .FirstOrDefaultAsync(m => m.Id == id);
+            if (song == null)
+            {
+                return NotFound();
+            }
+
+            return View(song);
+        }
+
 
         [Authorize]
         public IActionResult Create()

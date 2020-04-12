@@ -46,9 +46,11 @@
                 <img src="@item.Image" style="width: 50px; height: 50px;"/>
             </td>
             <td>
-            @if (User.Identity.IsAuthenticated) { 
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> 
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                @if (User.Identity.IsAuthenticated)
+                {
+                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a>
+                    <a asp-action="Details" asp-route-id="@item.Id">Details</a>
+                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
                 }
             </td>
         </tr>

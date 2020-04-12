@@ -27,6 +27,23 @@ namespace MusicStore.Controllers
         }
 
 
+        public async Task<IActionResult> Details(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var author = await _context.Author
+                .FirstOrDefaultAsync(m => m.Id == id);
+            if (author == null)
+            {
+                return NotFound();
+            }
+
+            return View(author);
+        }
+
         [Authorize]
         public IActionResult Create()
         {

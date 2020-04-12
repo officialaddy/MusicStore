@@ -34,6 +34,12 @@ namespace MusicStore
                 .AddEntityFrameworkStores<ApplicationDbContext>();
             services.AddControllersWithViews();
             services.AddRazorPages();
+            services.AddAuthentication()
+        .AddGoogle(options =>
+        {
+            options.ClientId = "1040763011065-9bh9lo1dvt8hdfb6r2dgqbh2pohjb4u3.apps.googleusercontent.com";
+            options.ClientSecret = "xU-0fXLgpbZq1JqdR6nsbrYF";
+        });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
