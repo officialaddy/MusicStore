@@ -13,5 +13,6 @@ namespace MusicStore.Models
         public string Firstname { get; set; }
         public string Lastname { get; set; }
         public int BirthYear { get; set; }
+        public virtual ICollection<Album> Albums { get; set; }
     }
 }
