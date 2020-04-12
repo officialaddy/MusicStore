@@ -14,5 +14,6 @@ namespace MusicStore.Data
         {
         }
         public DbSet<MusicStore.Models.Author> Author { get; set; }
+        public DbSet<MusicStore.Models.Album> Album { get; set; }
     }
 }
